@@ -6,10 +6,12 @@ class PrimePalindrome
   end
 
   def to_s
-    numbers.select do |number|
-      is_prime_palindrome?(number)
-    end.max
+    numbers.to_a.reverse.each do |number|
+      return number if is_prime_palindrome?(number)
+    end
   end
+
+  private
 
   def is_prime_palindrome?(number)
     is_palindrome?(number) && is_prime?(number)
@@ -23,7 +25,7 @@ class PrimePalindrome
     arr = (2..number).select do |num|
       number % num == 0
     end
-    arr.length == 1
+    arr.one?
   end
 end
 

@@ -1,5 +1,5 @@
 class Atm
-  attr_accessor :balance, :file
+  attr_accessor :balance
 
   def initialize(balance)
     @balance = balance
@@ -9,13 +9,28 @@ class Atm
     puts 'Enter PIN'
     pin = gets.chomp
     if card.pin == pin
-      menu(card)
+      if card.phone
+        mobile_authentication(card)
+      else
+        menu(card)
+      end
     else
-      puts 'wrong pin number'
+      puts 'wrong pin'
     end
   end
 
   private
+
+  def mobile_authentication(card)
+    puts 'Enter MOBILE PIN'
+    mobile_pin = gets.chomp
+    if mobile_pin == card.phone.pin
+      menu(card)
+    else
+      puts 'wrong mobile pin'
+    end
+
+  end
 
   def menu(card)
     puts '1 - show account balance'
@@ -31,25 +46,26 @@ class Atm
         add_money(card)
       else
         puts 'wrong input'
+        menu(card)
     end
   end
 
   def show_account_balance(card)
-    puts "You have: #{card.account.balance}$"
+    puts "You have: #{card.balance}$"
   end
 
   def withdraw_money(card)
     puts 'How much do you want to withdraw?'
     money = gets.chomp.to_i
 
-    if card.account.balance < money
+    if card.balance < money
       puts "You don't have enough money."
     elsif balance < money
       puts "There is not enough money in ATM."
     else
       @balance -= money
-      card.account.balance -= money
-      puts "Your account balance: #{card.account.balance}$"
+      card.balance -= money
+      puts "Your account balance: #{card.balance}$"
       puts "ATM balance: #{balance}$"
     end
   end
@@ -59,29 +75,29 @@ class Atm
     money = gets.chomp.to_i
 
     @balance += money
-    card.account.balance += money
-    puts "Your account balance: #{card.account.balance}$"
+    card.balance += money
+    puts "Your account balance: #{card.balance}$"
     puts "ATM balance: #{balance}$"
   end
 end
 
-class Card
-  attr_accessor :pin, :account
+class Card < Struct.new(:pin, :account, :phone)
+  def balance
+    account.balance
+  end
 
-  def initialize(pin, account)
-    @pin = pin
-    @account = account
+  def balance=(value)
+    account.balance += value
   end
 end
 
-class Account
-  attr_accessor :balance
+class Account < Struct.new(:balance)
+end
 
-  def initialize(balance)
-    @balance = balance
-  end
+class Phone < Struct.new(:pin)
 end
 
 account = Account.new(100)
-card = Card.new('1234', account)
+phone = Phone.new('4321')
+card = Card.new('1234', account, phone)
 Atm.new(10000).authenticate(card)

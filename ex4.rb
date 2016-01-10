@@ -7,7 +7,7 @@ class Person
   end
 
   def completed_tasks
-    tasks.select { |task| task.completed }
+    tasks.select(&:completed)
   end
 end
 
