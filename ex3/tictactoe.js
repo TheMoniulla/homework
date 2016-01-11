@@ -1,13 +1,9 @@
-function onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-};
-
 function TicTacToe() {
     this.newGame();
 };
 
 TicTacToe.prototype.newGame = function () {
-    this.result = new Array([null, null, null], [null, null, null], [null, null, null]);
+    this.result = new Array(new Array(3), new Array(3), new Array(3));
     this.player = 'O';
     this.move = 0;
     this.gameOver = false;
@@ -30,13 +26,13 @@ TicTacToe.prototype.setCell = function (cell, x, y) {
 };
 
 TicTacToe.prototype.isGameOver = function () {
-    if (this.thereIsAWinner())
+    if (this.isThereAWinner())
         this.win();
     else if (this.move > 8)
         this.draw();
 };
 
-TicTacToe.prototype.thereIsAWinner = function () {
+TicTacToe.prototype.isThereAWinner = function () {
     return (this.result[0][0] == this.result[0][1] && this.result[0][1] == this.result[0][2] && this.result[0][0] != null) ||
         (this.result[1][0] == this.result[1][1] && this.result[1][1] == this.result[1][2] && this.result[1][0] != null) ||
         (this.result[2][0] == this.result[2][1] && this.result[2][1] == this.result[2][2] && this.result[2][0] != null) ||
@@ -63,18 +59,18 @@ TicTacToe.prototype.win = function () {
 $(document).ready(function () {
     ticTacToe = new TicTacToe();
 
-    $('td').bind("click", function (event) {
+    $('td').click(function (event) {
         cell = $(event.target);
         x = cell.attr('x');
         y = cell.attr('y');
 
-        if (!ticTacToe.gameOver && ticTacToe.result[x][y] == null) {
+        if (!ticTacToe.gameOver && !ticTacToe.result[x][y]) {
             ticTacToe.setCell(cell, x, y);
             ticTacToe.isGameOver();
         }
     });
 
-    $('#reset').bind("click", function () {
+    $('#reset').click(function () {
         ticTacToe.newGame();
     });
 });
