@@ -6,30 +6,46 @@ class Atm
   end
 
   def authenticate(card)
-    puts 'Enter PIN'
-    pin = gets.chomp
-    if card.pin == pin
+    if !card_authentication(card)
+      puts "The card is blocked"
+    else
       if card.phone
-        mobile_authentication(card)
+        if !mobile_authentication(card)
+          puts "The card is blocked"
+        end
       else
         menu(card)
       end
-    else
-      puts 'wrong pin'
     end
   end
 
   private
 
-  def mobile_authentication(card)
-    puts 'Enter MOBILE PIN'
-    mobile_pin = gets.chomp
-    if mobile_pin == card.phone.pin
-      menu(card)
-    else
-      puts 'wrong mobile pin'
+  def card_authentication(card)
+    3.times do
+      puts 'Enter PIN'
+      pin = gets.chomp
+      if card.pin == pin
+        return true
+      else
+        puts 'wrong pin'
+      end
     end
+    return false
+  end
 
+  def mobile_authentication(card)
+    3.times do
+      puts 'Enter MOBILE PIN'
+      mobile_pin = gets.chomp
+      if mobile_pin == card.phone.pin
+        menu(card)
+        return true
+      else
+        puts 'wrong mobile pin'
+      end
+    end
+    return false
   end
 
   def menu(card)

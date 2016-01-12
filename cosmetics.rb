@@ -25,7 +25,7 @@ end
 class Cosmetic
   attr_accessor :name, :original_price, :original_weight, :weight, :weight_per_usage
 
-  def initialize(name, original_price, original_weight, weight_per_usage)
+  def initialize(name:, original_price:, original_weight:, weight_per_usage:)
     @name = name
     @original_price = original_price
     @original_weight = original_weight
@@ -64,15 +64,15 @@ class Cosmetic
   end
 end
 
-lotion = Cosmetic.new("The Body Shop balm", 10, 200, 5)
-face_mask = Cosmetic.new("Organique algae mask", 3.5, 30, 2)
-face_cream = Cosmetic.new("Clinique even better", 40, 50, 1)
-shower_gel = Cosmetic.new("Pat&Rub", 7.5, 280, 4)
-shave_gel = Cosmetic.new("L'occitan gel", 10, 150, 1)
-after_shave_balm = Cosmetic.new("L'occitan balm", 18, 75, 1)
+lotion = Cosmetic.new(name: "The Body Shop balm", original_price: 10, original_weight: 200, weight_per_usage: 5)
+face_mask = Cosmetic.new(name: "Organique algae mask", original_price: 3.5, original_weight: 30, weight_per_usage: 2)
+face_cream = Cosmetic.new(name: "Clinique even better", original_price: 40, original_weight: 50, weight_per_usage: 1)
+shower_gel = Cosmetic.new(name: "Pat&Rub", original_price: 7.5, original_weight: 280, weight_per_usage: 4)
+shave_gel = Cosmetic.new(name: "L'occitan gel", original_price: 10, original_weight: 150, weight_per_usage: 1)
+after_shave_balm = Cosmetic.new(name: "L'occitan balm", original_price: 18, original_weight: 75, weight_per_usage: 1)
 
-person_1 = Person.new("Irek", 32)
-person_2 = Person.new("Monika", 28)
+person_1 = Person.new(name: "Irek", age: 32)
+person_2 = Person.new(name: "Monika", age: 28)
 
 bag_1 = CosmeticBag.new([shower_gel, shave_gel, after_shave_balm], person_1)
 bag_2 = CosmeticBag.new([shower_gel, lotion, face_mask, face_cream], person_2)
