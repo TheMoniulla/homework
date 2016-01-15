@@ -15,7 +15,7 @@ class Mine
   private
 
   def trips_for_display
-    trips.map { |trip| trip_with_caption(trip) }.join("\n")
+    trips.map { |trip| "#{trip_with_caption(trip)}\n#{trip.statistic_for_display}\n" }.join("\n")
   end
 
   def trip_with_caption(trip)
@@ -50,7 +50,58 @@ class Trip
   end
 
   def revenue
-    groups.map { |group| group.people.length * ticket_price }.reduce(&:+)
+    groups.map do |group|
+      group.people.map do |person|
+        ticket_price_with_discount(person.age).round(2)
+      end
+    end.flatten.reduce(&:+)
+  end
+
+  def ticket_price_with_discount(age)
+    case age
+      when 0..5 then
+        0
+      when 6..17 then
+        0.5 * ticket_price
+      when 18..64 then
+        ticket_price
+      else
+        0.3 * ticket_price
+    end
+  end
+
+  def statistic_for_display
+    if trip_size
+      "  Trip size: #{trip_size} people with average age #{average_age} years old (#{people_per_age})"
+    else
+      '  No clients = No statistics :/'
+    end
+  end
+
+  def trip_size
+    groups.map { |group| group.people.size }.reduce(&:+)
+  end
+
+  def people_per_age
+    all_people = groups.map { |group| group.people }.flatten
+    result = {"0-5" => 0, "6-17" => 0, "18-64" => 0, "65+" => 0}
+    all_people.each do |person|
+      case person.age
+        when 0..5 then
+          result["0-5"] += 1
+        when 6..17 then
+          result["6-17"] += 1
+        when 18..64 then
+          result["18-64"] += 1
+        else
+          result["65+"] += 1
+      end
+    end
+    result.map { |key, val| "#{key}: #{val}" }.join(", ")
+  end
+
+  def average_age
+    groups.map { |group| group.people}.flatten.map(&:age).reduce(&:+) / trip_size
   end
 
   def to_s
@@ -83,28 +134,35 @@ class Group
   end
 end
 
-class Person < Struct.new(:name)
+class Person
+  attr_reader :name, :age
+
+  def initialize(name:, age:)
+    @name = name
+    @age = age
+  end
+
   def to_s
-    name
+    "#{name} (age: #{age})"
   end
 end
 
-person_1 = Person.new("Eric")
-person_2 = Person.new("Monica")
-person_3 = Person.new("Simon")
-person_4 = Person.new("Matthew")
-person_5 = Person.new("Isabel")
-person_6 = Person.new("Ann")
-person_7 = Person.new("Maggie")
-person_8 = Person.new("Aggie")
-person_9 = Person.new("Sofia")
-person_10 = Person.new("Tom")
-person_11 = Person.new("Alice")
-person_12 = Person.new("Barbara")
-person_13 = Person.new("Martha")
-person_14 = Person.new("Jennifer")
-person_15 = Person.new("Justin")
-person_16 = Person.new("Joanne")
+person_1 = Person.new(name: "Eric", age: 10)
+person_2 = Person.new(name: "Monica", age: 11)
+person_3 = Person.new(name: "Simon", age: 10)
+person_4 = Person.new(name: "Matthew", age: 11)
+person_5 = Person.new(name: "Isabel", age: 25)
+person_6 = Person.new(name: "Ann", age: 65)
+person_7 = Person.new(name: "Maggie", age: 66)
+person_8 = Person.new(name: "Aggie", age: 67)
+person_9 = Person.new(name: "Sofia", age: 4)
+person_10 = Person.new(name: "Tom", age: 29)
+person_11 = Person.new(name: "Alice", age: 28)
+person_12 = Person.new(name: "Barbara", age: 15)
+person_13 = Person.new(name: "Martha", age: 16)
+person_14 = Person.new(name: "Jennifer", age: 17)
+person_15 = Person.new(name: "Justin", age: 18)
+person_16 = Person.new(name: "Joanne", age: 19)
 
 group_1 = Group.new
 group_1.add_person(person_1)
