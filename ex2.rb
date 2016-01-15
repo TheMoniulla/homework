@@ -6,11 +6,13 @@ class Atm
   end
 
   def authenticate(card)
-    if !card_authentication(card)
+    card_authentication(card)
+    if card.blocked
       puts "The card is blocked"
     else
       if card.phone
-        if !mobile_authentication(card)
+        mobile_authentication(card)
+        if card.blocked
           puts "The card is blocked"
         end
       else
@@ -31,7 +33,7 @@ class Atm
         puts 'wrong pin'
       end
     end
-    return false
+    card.block!
   end
 
   def mobile_authentication(card)
@@ -45,7 +47,7 @@ class Atm
         puts 'wrong mobile pin'
       end
     end
-    return false
+    card.block!
   end
 
   def menu(card)
@@ -80,8 +82,8 @@ class Atm
       puts "There is not enough money in ATM."
     else
       @balance -= money
-      card.balance -= money
-      puts "Your account balance: #{card.balance}$"
+      card_balance = card.balance - money
+      puts "Your account balance: #{card_balance}$"
       puts "ATM balance: #{balance}$"
     end
   end
@@ -91,19 +93,32 @@ class Atm
     money = gets.chomp.to_i
 
     @balance += money
-    card.balance += money
-    puts "Your account balance: #{card.balance}$"
+    card_balance = card.balance + money
+    puts "Your account balance: #{card_balance}$"
     puts "ATM balance: #{balance}$"
   end
 end
 
-class Card < Struct.new(:pin, :account, :phone)
+class Card
+  attr_reader :pin, :account, :phone, :blocked
+
+  def initialize(pin:, account:, phone:)
+    @pin = pin
+    @account = account
+    @phone = phone
+    @blocked = false
+  end
+
   def balance
     account.balance
   end
 
   def balance=(value)
     account.balance += value
+  end
+
+  def block!
+    @blocked = true
   end
 end
 
@@ -115,5 +130,5 @@ end
 
 account = Account.new(100)
 phone = Phone.new('4321')
-card = Card.new('1234', account, phone)
+card = Card.new(pin: '1234', account: account, phone: phone)
 Atm.new(10000).authenticate(card)

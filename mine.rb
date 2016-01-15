@@ -2,20 +2,29 @@ class Mine
   attr_accessor :trips
 
   def initialize
-    @trips = [Trip.new('08:00', 12),
-              Trip.new('10:00', 20),
-              Trip.new('12:00', 20),
-              Trip.new('14:00', 20)]
+    @trips = [Trip.new(hour: '08:00', ticket_price: 12),
+              Trip.new(hour: '10:00', ticket_price: 20),
+              Trip.new(hour: '12:00', ticket_price: 20),
+              Trip.new(hour: '14:00', ticket_price: 20)]
   end
 
   def to_s
-    trips.map do |trip|
-      "HOUR #{trip.hour} \n" + "#{trip}"
-    end.join("\n") +
-        "\nDAY REVENUE: #{day_revenue}$"
+    "#{trips_for_display}\n#{day_revenue_for_display}"
   end
 
   private
+
+  def trips_for_display
+    trips.map { |trip| trip_with_caption(trip) }.join("\n")
+  end
+
+  def trip_with_caption(trip)
+    "HOUR #{trip.hour}\n#{trip}"
+  end
+
+  def day_revenue_for_display
+    "DAY REVENUE: #{day_revenue}$"
+  end
 
   def day_revenue
     trips.map(&:revenue).compact.reduce(&:+)
@@ -25,7 +34,7 @@ end
 class Trip
   attr_accessor :hour, :ticket_price, :groups
 
-  def initialize(hour, ticket_price)
+  def initialize(hour:, ticket_price:)
     @hour = hour
     @ticket_price = ticket_price
     @groups = []
