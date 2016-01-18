@@ -73,7 +73,7 @@ printer.add_page(page_2)
 printer.print
 
 puts '---------------------'
-printer.set_text_to_print('I <3 ice hokey')
+printer.set_text_to_print('I <3 ice hockey')
 printer.print
 printer.add_page(page_3)
 printer.print
